@@ -19,6 +19,7 @@ package com.digitalpebble.storm.crawler;
 import java.io.IOException;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import backtype.storm.Config;
@@ -41,5 +42,20 @@ public class TestMetadataSerialization {
         Metadata md2 = (Metadata) kvd.deserializeObject(content);
 
         // TODO compare md1 and md2
+    }
+
+    @Test
+    public void testLock() throws IOException {
+        Metadata md = new Metadata();
+        md.setValue("a", "1");
+        md.setValue("b", "2");
+        md.lock();
+        boolean exception = false;
+        try {
+            md.setValue("c", "3");
+        } catch (UnsupportedOperationException e) {
+            exception = true;
+        }
+        Assert.assertEquals(true, exception);
     }
 }

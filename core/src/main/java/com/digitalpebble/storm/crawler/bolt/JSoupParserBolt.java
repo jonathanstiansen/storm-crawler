@@ -285,7 +285,7 @@ public class JSoupParserBolt extends BaseRichBolt {
                         StatusStreamName,
                         tuple,
                         new Values(outlink.getTargetURL(), outlink
-                                .getMetadata(), Status.DISCOVERED));
+                                .getMetadata().lock(), Status.DISCOVERED));
             }
         }
 
@@ -298,7 +298,7 @@ public class JSoupParserBolt extends BaseRichBolt {
             collector.emit(
                     tuple,
                     new Values(doc.getKey(), parseDoc.getContent(), parseDoc
-                            .getMetadata(), parseDoc.getText()));
+                            .getMetadata().lock(), parseDoc.getText()));
         }
 
         collector.ack(tuple);
@@ -312,7 +312,7 @@ public class JSoupParserBolt extends BaseRichBolt {
         // its status
         metadata.setValue(Constants.STATUS_ERROR_SOURCE, errorSource);
         metadata.setValue(Constants.STATUS_ERROR_MESSAGE, errorMessage);
-        collector.emit(StatusStreamName, tuple, new Values(url, metadata,
+        collector.emit(StatusStreamName, tuple, new Values(url, metadata.lock(),
                 Status.ERROR));
         collector.ack(tuple);
         // Increment metric that is context specific

@@ -28,6 +28,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.google.common.collect.ImmutableMap;
+
 /** Wrapper around Map <String,String[]> **/
 
 public class Metadata {
@@ -46,6 +48,17 @@ public class Metadata {
     }
 
     /**
+     * Make the underlying Map immutable; can be called when emitting to the
+     * output collector. Any code which operates on the metadata afterwards
+     * should get a UnsupportedOperationException. This is a temporary measure
+     * for detecting such cases.
+     **/
+    public Metadata lock() {
+        md = ImmutableMap.copyOf(md);
+        return this;
+    }
+
+    /**
      * Wraps an existing HashMap into a Metadata object - does not clone the
      * content
      **/
@@ -60,7 +73,9 @@ public class Metadata {
         md.putAll(m.md);
     }
 
-    /** @returns the first value for the key or null if it does not exist **/
+    /**
+     * @returns the first value for the key or null if it does not exist
+     **/
     public String getFirstValue(String key) {
         String[] values = md.get(key);
         if (values == null)
@@ -116,8 +131,8 @@ public class Metadata {
             return;
         }
 
-        ArrayList<String> existing = new ArrayList<String>(existingvals.length
-                + values.size());
+        ArrayList<String> existing = new ArrayList<String>(
+                existingvals.length + values.size());
         for (String v : existingvals)
             existing.add(v);
 
@@ -133,7 +148,9 @@ public class Metadata {
         return toString("");
     }
 
-    /** Returns a String representation of the metadata with one K/V per line **/
+    /**
+     * Returns a String representation of the metadata with one K/V per line
+     **/
     public String toString(String prefix) {
         StringBuffer sb = new StringBuffer();
         if (prefix == null)
